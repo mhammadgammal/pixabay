@@ -1,4 +1,4 @@
-package com.mhammad.photoapp.ui;
+package com.mhammad.photoapp.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -19,19 +19,20 @@ import java.util.List;
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private List<Hit> data = new ArrayList<>();
     private Context context;
-    private static OnFavouriteClickListener listener;
-    public PostAdapter( Context context) {
+    private static OnFavoriteClickListener listener;
+    public PostAdapter(Context context, OnFavoriteClickListener listener) {
         this.context = context;
+        this.listener = listener;
     }
 
     public void setData(List<Hit> data) {this.data = data;notifyDataSetChanged();}
-    public void setOnFavouriteClickListener(OnFavouriteClickListener listener) { PostAdapter.listener = listener; }
+
     @NonNull
     @Override
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.post, parent, false);
 
-        return new PostViewHolder(view);
+        return new PostViewHolder(view, listener);
     }
 
     @Override
@@ -49,12 +50,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return data.size();
     }
 
-    public static class PostViewHolder extends RecyclerView.ViewHolder  {
+    public static class PostViewHolder extends RecyclerView.ViewHolder {
         ImageView userImg, postImg, favourite;
         TextView views, comment, like, userName;
-
-        public PostViewHolder(@NonNull View itemView) {
+        OnFavoriteClickListener listener;
+        public PostViewHolder(@NonNull View itemView, OnFavoriteClickListener listener) {
             super(itemView);
+            this.listener = listener;
             userImg = itemView.findViewById(R.id.userImg);
             postImg = itemView.findViewById(R.id.postImg);
             views = itemView.findViewById(R.id.viewsTV);
@@ -62,22 +64,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             like = itemView.findViewById(R.id.likeTV);
             userName = itemView.findViewById(R.id.userNameTV);
             favourite =  itemView.findViewById(R.id.favourite_disabled);
-            favourite.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(listener != null)
-                    {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION)
-                        {
-                            listener.onClick(position);
-                        }
-                    }
-                }
-            });
+           favourite.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View view) {
+                   listener.onFavoriteClick(getAdapterPosition());
+               }
+           });
         }
+
+
     }
-    public interface OnFavouriteClickListener{
-        void onClick(int position);
+    public interface OnFavoriteClickListener{
+        void onFavoriteClick(int position);
     }
 }

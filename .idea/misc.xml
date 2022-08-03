@@ -4,8 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/clt/App/PhotoApp/app/src/main/res/drawable-anydpi/ic_favourite.xml" value="0.3635" />
+        <entry key="..\:/Users/clt/App/PhotoApp/app/src/main/res/layout/activity_favourite.xml" value="0.33" />
         <entry key="..\:/Users/clt/App/PhotoApp/app/src/main/res/layout/activity_main.xml" value="0.3484375" />
-        <entry key="..\:/Users/clt/App/PhotoApp/app/src/main/res/layout/post.xml" value="0.3625" />
+        <entry key="..\:/Users/clt/App/PhotoApp/app/src/main/res/layout/favorite_item.xml" value="0.2" />
+        <entry key="..\:/Users/clt/App/PhotoApp/app/src/main/res/layout/post.xml" value="0.3734375" />
         <entry key="..\:/Users/clt/App/PhotoApp/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.37" />
         <entry key="..\:/Users/clt/App/PhotoApp/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.37" />
       </map>
