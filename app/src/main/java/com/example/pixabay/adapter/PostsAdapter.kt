@@ -3,7 +3,6 @@ package com.example.pixabay.adapter
 import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -38,7 +37,7 @@ class PostsAdapter(private val clickListener: PostClickListener)
                 post = item
                 click = clickListener
                 if (item.isFavourite){
-                     likeIcon.setImageResource(R.drawable.favorite)
+                    likeIcon.setImageResource(R.drawable.favorite)
                 }else likeIcon.setImageResource(R.drawable.outline_favorite_border_24)
                 executePendingBindings()
             }
@@ -70,7 +69,7 @@ class PostsAdapter(private val clickListener: PostClickListener)
             return newItem == oldItem
         }
     }
-    
+
     companion object{
         private const val TAG = "PostsAdapter"}
 }

@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
+@Suppress("UNCHECKED_CAST")
 class PostsViewModelFactory(val application: Application): ViewModelProvider.Factory {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -15,3 +16,4 @@ class PostsViewModelFactory(val application: Application): ViewModelProvider.Fac
         throw java.lang.IllegalArgumentException("Invalid View Model")
     }
 }
+

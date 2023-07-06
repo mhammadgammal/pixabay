@@ -12,6 +12,19 @@
         android:layout_height="match_parent"
         tools:context=".ui.MainActivity">
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/postsRecyclerView"
+            app:srcCompat="@drawable/favorite"
+            android:contentDescription="@string/fab_desc"
+            android:focusable="true" />
+
         <TextView
             android:id="@+id/noPostsTextView"
             android:layout_width="wrap_content"

@@ -3,58 +3,63 @@ package com.example.pixabay.ui
 import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.pixabay.cache.Resource
+import com.example.pixabay.model.FavouritePost
 import com.example.pixabay.model.Hit
 import com.example.pixabay.repo.CachedPostsRepo
 import com.example.pixabay.repo.FavouritePostsRepo
 import com.example.pixabay.repo.PostRepo
-import com.example.pixabay.repo.database.favourite.FavouritePostsDatabase.Companion.getInstance
-import com.example.pixabay.repo.database.favourite.cache.CachedPostsDatabase
+import com.example.pixabay.repo.database.cache.CachedPostsDatabase
+import com.example.pixabay.repo.database.favourite.FavouriteDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PostsViewModel(private val application: Application) : ViewModel() {
 
     private var _postsMutableFlow: MutableStateFlow<List<Hit>> = MutableStateFlow(listOf())
-    private val favouritePostsDatabase = getInstance(application)
+    private var _favouritePostsMutableFlow: MutableStateFlow<List<FavouritePost>> = MutableStateFlow(listOf())
+    private var _resourceMutableFlow: MutableStateFlow<Resource> =
+        MutableStateFlow(Resource.SUCCESS(listOf()))
     private val cachedPostsDatabase = CachedPostsDatabase.getInstance(application)
-    private val favouritePostsRepo = FavouritePostsRepo(favouritePostsDatabase)
     private val cachedPostsRepo = CachedPostsRepo(cachedPostsDatabase, application)
+    private val favouritePostsDatabase = FavouriteDatabase.getInstance(application)
+    private val favouritePostsRepo = FavouritePostsRepo(favouritePostsDatabase)
+
     private val postsRepo = PostRepo()
-    val postsStateFlow: StateFlow<List<Hit>>
-        get() = _postsMutableFlow
+    val favouritePostsStateFlow: StateFlow<List<FavouritePost>>
+        get() = _favouritePostsMutableFlow
+    val resourceStateFlow: StateFlow<Resource>
+        get() = _resourceMutableFlow
     init {
-        getRemotePosts()
+        getPosts()
     }
 
-    private fun getRemotePosts() {
+
+    private fun getPosts() {
         viewModelScope.launch {
-            withContext(Dispatchers.IO){
-            postsRepo.getRemotePosts().collect{
-                withContext(Dispatchers.Main){ _postsMutableFlow.value = it }
-            }
+            cachedPostsRepo.getCachedPosts().collect {
+                withContext(Dispatchers.Main) { _resourceMutableFlow.value = it }
             }
         }
     }
 
-
     fun getPostsByTags(tag: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                postsRepo.getPostsByTags(tag).collect{
+                postsRepo.getPostsByTags(tag).collect {
                     _postsMutableFlow.value = it
                 }
             }
         }
     }
 
-    fun insertFavouritePost(post: Hit, context: Context) {
+    fun insertFavouritePost(post: FavouritePost, context: Context) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 favouritePostsRepo.insertFavouritePost(post)
@@ -62,17 +67,20 @@ class PostsViewModel(private val application: Application) : ViewModel() {
         }
     }
 
-    fun getFavouritePost(context: Context): List<Hit> {
-        var favouritePosts: List<Hit>? = null
+    fun getFavouritePost() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                favouritePosts = favouritePostsRepo.getFavouritePosts()
+                favouritePostsRepo.getFavouritePosts().collect{
+                    withContext(Dispatchers.Main){
+                        _favouritePostsMutableFlow.value = it
+                    }
+                }
             }
         }
-        return favouritePosts!!
+
     }
 
-    fun deleteFavouritePost(postId: Int, context: Context) {
+    fun deleteFavouritePost(postId: Int) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 favouritePostsRepo.deleteFavouritePost(postId)
@@ -84,26 +92,4 @@ class PostsViewModel(private val application: Application) : ViewModel() {
         private const val TAG = "PostsViewModel"
     }
 
-    fun isNetworkConnected(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetworkInfo = connectivityManager.activeNetworkInfo
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected
-    }
-
-    private fun cache() {
-//        if (isNetworkConnected(application)){
-//            viewModelScope.launch{
-//                withContext(Dispatchers.IO) {
-//                    val hits = postsRepo.getRemotePosts()
-//                    cachedPostsDatabase.withTransaction {
-//                        cachedPostsDatabase.cacheDao.deleteCachedPosts()
-//                        cachedPostsDatabase.cacheDao.insertCachedPosts(hits)
-//                    }
-//                }}
-//        }
-//        else {
-//            cachedPostsDatabase.cacheDao.getCachedPosts()
-//        }
-    }
 }

@@ -15,12 +15,8 @@ fun downloadUserPhoto(imageView: ImageView, url: String?) {
 
 @BindingAdapter("setPostPic")
 fun downloadPostPic(imageView: ImageView, url: String?) {
-    imageView.load(url)
-}
-
-@BindingAdapter("setFavIcon")
-fun setFavIcon(imageView: ImageView, isFavourite: Boolean){
-    if (isFavourite){
-        imageView.setImageResource(R.drawable.favorite)
-    }else imageView.setImageResource(R.drawable.outline_favorite_border_24)
+    imageView.load(url){
+        placeholder(R.drawable.loading_animation)
+        error(R.drawable.ic_broken_image)
+    }
 }

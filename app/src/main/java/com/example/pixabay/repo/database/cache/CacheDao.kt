@@ -14,7 +14,7 @@ interface CacheDao {
     suspend fun insertCachedPosts(post: List<Hit>)
 
     @Query("select * from posts")
-    fun getCachedPosts(): List<Hit>
+    fun getCachedPosts(): Flow<List<Hit>>
 
     @Query("delete from posts")
     suspend fun deleteCachedPosts()

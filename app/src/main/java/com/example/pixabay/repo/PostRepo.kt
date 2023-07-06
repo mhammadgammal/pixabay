@@ -1,15 +1,19 @@
 package com.example.pixabay.repo
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.util.Log
+import androidx.room.withTransaction
+import com.example.pixabay.cache.Resource
+import com.example.pixabay.cache.networkBoundResource
+import com.example.pixabay.model.FavouritePost
 import com.example.pixabay.model.Hit
 import com.example.pixabay.repo.api.PostsClint.retrofitService
-import com.example.pixabay.repo.database.favourite.FavouritePostsDatabase
-import com.example.pixabay.repo.database.favourite.cache.CachedPostsDatabase
-import kotlinx.coroutines.Dispatchers
+import com.example.pixabay.repo.database.cache.CachedPostsDatabase
+import com.example.pixabay.repo.database.favourite.FavouriteDatabase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 
 
 open class PostRepo {
@@ -25,40 +29,47 @@ open class PostRepo {
 }
 
 
-class FavouritePostsRepo(private val db: FavouritePostsDatabase) : PostRepo() {
+class FavouritePostsRepo(private val db: FavouriteDatabase) : PostRepo() {
 
-    suspend fun insertFavouritePost(post: Hit) = db.favoriteDao.insertFavouritePost(post)
+    fun insertFavouritePost(post: FavouritePost) = db.favoriteDao.insertFavouritePost(post)
 
-    suspend fun getFavouritePosts() = db.favoriteDao.getFavouritePosts()
+    fun getFavouritePosts() = db.favoriteDao.getFavouritePosts()
 
-    suspend fun deleteFavouritePost(postId: Int) = db.favoriteDao.deleteFavouritePost(postId)
+    fun deleteFavouritePost(postId: Int) = db.favoriteDao.deleteFavouritePost(postId)
 
 }
 
 class CachedPostsRepo(private val db: CachedPostsDatabase, private val context: Context) :
     PostRepo() {
 
-    suspend fun insertPosts(posts: List<Hit>) = db.cacheDao.insertCachedPosts(posts)
+    private suspend fun insertPosts(posts: List<Hit>) = db.cacheDao.insertCachedPosts(posts)
 
-//    suspend fun getCachedPosts(): Flow<Resource> {
-//        Log.d(TAG, "getCachedPosts: fired")
-//        return networkBoundResource(
-//            query = { db.cacheDao.getCachedPosts() },
-//            fetch = {
-//                delay(2000)
-//                retrofitService.getPosts()
-//            },
-//            saveFetchResult = { posts ->
-//                db.withTransaction {
-//                    db.cacheDao.deleteCachedPosts()
-//                    db.cacheDao.insertCachedPosts(posts)
-//                }
-//            },
-//            shouldFetch = isNetworkConnected(context = context)
-//        )
-//    }
+     fun getCachedPosts(): Flow<Resource> {
+        Log.d(TAG, "getCachedPosts: fired")
+        return networkBoundResource(
+            query = { db.cacheDao.getCachedPosts() },
+            fetch = {
+                delay(2000)
+                retrofitService.getPosts()
+            },
+            saveFetchResult = { posts ->
+                db.withTransaction {
+                    deleteCachedPosts()
+                    insertPosts(posts)
+                }
+            },
+            shouldFetch = isNetworkConnected(context = context)
+        )
+    }
 
-    suspend fun deleteCachedPosts() = db.cacheDao.deleteCachedPosts()
+    private suspend fun deleteCachedPosts() = db.cacheDao.deleteCachedPosts()
+
+    private fun isNetworkConnected(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
 
     companion object {
         private const val TAG = "PostRepo"

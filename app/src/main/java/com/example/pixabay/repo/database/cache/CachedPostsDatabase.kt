@@ -1,11 +1,11 @@
-package com.example.pixabay.repo.database.favourite.cache
+package com.example.pixabay.repo.database.cache
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.pixabay.model.CachedPosts
 import com.example.pixabay.model.Hit
+import com.example.pixabay.repo.database.favourite.cache.CacheDao
 
 @Database(entities = [Hit::class], version = 1, exportSchema = false)
 abstract class CachedPostsDatabase
@@ -17,7 +17,7 @@ abstract class CachedPostsDatabase
 
         fun getInstance(context: Context): CachedPostsDatabase {
             synchronized(CachedPostsDatabase::class.java) {
-                if (!::instance.isInitialized) {
+                if (!Companion::instance.isInitialized) {
                     instance = Room.databaseBuilder(
                         context,
                         CachedPostsDatabase::class.java,
