@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="post"
+            type="com.example.pixabay.model.Hit" />
+
+        <variable
+            name="click"
+            type="com.example.pixabay.adapter.PostsAdapter.PostClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/postConstraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> click.onClick(post)}"
+        android:layout_marginBottom="@dimen/_10sdp">
+
+        <ImageView
+            android:id="@+id/postImageView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/post_photo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePhotoImage"
+            app:layout_constraintVertical_bias="0.027"
+            app:setPostPic="@{post.largeImageURL}" />
+
+        <ImageView
+            android:id="@+id/profilePhotoImage"
+            android:layout_width="88dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/circular_image"
+            android:contentDescription="@string/profile_photo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.012"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:setUserPhoto="@{post.userImageURL}" />
+
+
+        <TextView
+            android:id="@+id/userNameTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{String.valueOf(post.user)}"
+            android:textSize="@dimen/_20ssp"
+            app:layout_constraintBottom_toBottomOf="@+id/profilePhotoImage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.075"
+            app:layout_constraintStart_toEndOf="@+id/profilePhotoImage"
+            app:layout_constraintTop_toTopOf="@+id/profilePhotoImage"
+            app:layout_constraintVertical_bias="0.48" />
+
+        <ImageView
+            android:id="@+id/likeIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/like_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/postImageView"
+            app:setFavIcon="@{post.isFavourite}" />
+
+        <TextView
+            android:id="@+id/likeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="9dp"
+            android:text="@{String.valueOf(post.likes)}"
+            app:layout_constraintStart_toEndOf="@+id/likeIcon"
+            app:layout_constraintTop_toBottomOf="@+id/postImageView" />
+
+        <ImageView
+            android:id="@+id/commentIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="6dp"
+            android:contentDescription="@string/like_icon"
+            app:layout_constraintStart_toEndOf="@+id/likeTextView"
+            app:layout_constraintTop_toBottomOf="@+id/postImageView"
+            app:srcCompat="@drawable/comment_ic" />
+
+        <TextView
+            android:id="@+id/commentTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="9dp"
+            android:contentDescription="@string/like_icon"
+            android:text="@{String.valueOf(post.comments)}"
+            app:layout_constraintStart_toEndOf="@+id/commentIcon"
+            app:layout_constraintTop_toBottomOf="@+id/postImageView" />
+
+        <ImageView
+            android:id="@+id/downloadIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="5dp"
+            android:contentDescription="@string/like_icon"
+            app:layout_constraintStart_toEndOf="@+id/commentTextView"
+            app:layout_constraintTop_toBottomOf="@+id/postImageView"
+            app:srcCompat="@drawable/download_ic" />
+
+        <TextView
+            android:id="@+id/downloadTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:text="@{String.valueOf(post.downloads)}"
+            app:layout_constraintStart_toEndOf="@+id/downloadIcon"
+            app:layout_constraintTop_toBottomOf="@+id/postImageView" />
+
+        <TextView
+            android:id="@+id/viewTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:text="@{String.valueOf(post.views)}"
+            app:layout_constraintStart_toEndOf="@+id/viewIcon"
+            app:layout_constraintTop_toBottomOf="@+id/postImageView" />
+
+        <ImageView
+            android:id="@+id/viewIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="4dp"
+            android:contentDescription="@string/like_icon"
+            app:layout_constraintStart_toEndOf="@+id/downloadTextView"
+            app:layout_constraintTop_toBottomOf="@+id/postImageView"
+            app:srcCompat="@drawable/baseline_remove_red_eye_24" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
