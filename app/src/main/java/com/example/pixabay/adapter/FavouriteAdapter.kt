@@ -1,6 +1,5 @@
 package com.example.pixabay.adapter
 
-import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,8 +10,6 @@ import com.example.pixabay.R
 import com.example.pixabay.databinding.FavouriteItemBinding
 import com.example.pixabay.model.FavouritePost
 
-@SuppressLint("StaticFieldLeak")
-lateinit var binding: FavouriteItemBinding
 class FavouriteAdapter(private val clickListener: FavouriteOnClickListener):
 ListAdapter<FavouritePost, FavouriteAdapter.FavouriteViewHolder>(FavouritePostsDiffCallback()){
 
@@ -47,13 +44,15 @@ ListAdapter<FavouritePost, FavouriteAdapter.FavouriteViewHolder>(FavouritePostsD
                 )
                 return FavouriteViewHolder(binding)
             }
+
+
         }
 
     }
 
 
-    class FavouriteOnClickListener(private val clickListener: (post: FavouritePost, binding: FavouriteItemBinding) -> Unit){
-        fun onCLick(post: FavouritePost) = clickListener(post, binding)
+    class FavouriteOnClickListener(private val clickListener: (post: FavouritePost) -> Unit){
+        fun onCLick(post: FavouritePost) = clickListener(post)
     }
 
     class FavouritePostsDiffCallback: DiffUtil.ItemCallback<FavouritePost>() {

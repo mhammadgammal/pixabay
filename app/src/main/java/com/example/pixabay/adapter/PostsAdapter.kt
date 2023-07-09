@@ -1,6 +1,5 @@
 package com.example.pixabay.adapter
 
-import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,8 +10,6 @@ import com.example.pixabay.R
 import com.example.pixabay.databinding.PostItemBinding
 import com.example.pixabay.model.Hit
 
-@SuppressLint("StaticFieldLeak")
-lateinit var _binding: PostItemBinding
 class PostsAdapter(private val clickListener: PostClickListener)
     : ListAdapter<Hit, PostsAdapter.PostsViewHolder>(PostsDiffCallBack()){
 
@@ -27,18 +24,14 @@ class PostsAdapter(private val clickListener: PostClickListener)
         Log.d(TAG, "onBindViewHolder: fetched")
     }
 
-    class PostsViewHolder private constructor(private val binding: PostItemBinding):
-        RecyclerView.ViewHolder(binding.root) {
-        init {
-            _binding = binding
-        }
+    class PostsViewHolder private constructor(private val postItemBinding: PostItemBinding):
+        RecyclerView.ViewHolder(postItemBinding.root) {
         fun bind(item: Hit, clickListener: PostClickListener){
-            binding.apply {
+            postItemBinding.apply {
                 post = item
                 click = clickListener
-                if (item.isFavourite){
-                    likeIcon.setImageResource(R.drawable.favorite)
-                }else likeIcon.setImageResource(R.drawable.outline_favorite_border_24)
+                if (item.isFavourite) likeIcon.setImageResource(R.drawable.favorite)
+                if (!item.isFavourite) likeIcon.setImageResource(R.drawable.outline_favorite_border_24)
                 executePendingBindings()
             }
         }
@@ -55,9 +48,8 @@ class PostsAdapter(private val clickListener: PostClickListener)
         }
     }
 
-    class PostClickListener(private val clickListener: (post: Hit, binding: PostItemBinding) -> Unit) {
-        fun onClick(post: Hit) = clickListener(post, _binding)
-
+    class PostClickListener(private val clickListener: (post: Hit) -> Unit) {
+        fun onClick(post: Hit) = clickListener(post)
     }
 
     class PostsDiffCallBack : DiffUtil.ItemCallback<Hit>() {
@@ -71,5 +63,7 @@ class PostsAdapter(private val clickListener: PostClickListener)
     }
 
     companion object{
-        private const val TAG = "PostsAdapter"}
+        private const val TAG = "PostsAdapter"
+
+    }
 }

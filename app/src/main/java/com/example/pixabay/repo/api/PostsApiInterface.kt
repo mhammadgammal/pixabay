@@ -6,10 +6,10 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface PostsApiInterface {
-    @GET("?key=38062418-652b7703c24f95911be66702c")
+    @GET("?key=26189611-305d8ed20ad78b772e9585436")
     suspend fun getPosts(): PostModel
 
-    @GET("?key=38062418-652b7703c24f95911be66702c")
+    @GET("?key=26189611-305d8ed20ad78b772e9585436")
     suspend fun getPostsByTag(@Query("q") tag: String): PostModel
 
 }

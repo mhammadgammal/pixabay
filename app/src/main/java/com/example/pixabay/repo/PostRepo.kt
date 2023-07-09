@@ -19,9 +19,13 @@ import kotlinx.coroutines.flow.flow
 open class PostRepo {
     open suspend fun getRemotePosts():Flow<List<Hit>> = flow{ val hits = retrofitService.getPosts().hits; emit(hits) }
 
-    open suspend fun getPostsByTags(tag: String): Flow<List<Hit>> = flow {
-        val taggedHits = retrofitService.getPostsByTag(tag).hits
-        emit(taggedHits)
+    open suspend fun getPostsByTags(tag: String): Flow<List<Hit>> {
+        var taggedHits: List<Hit>
+        val flow =  flow {
+            taggedHits = retrofitService.getPostsByTag(tag).hits
+            emit(taggedHits)
+        }
+        return flow
     }
     companion object {
         private const val TAG = "PostRepo"
@@ -44,12 +48,14 @@ class CachedPostsRepo(private val db: CachedPostsDatabase, private val context: 
 
     private suspend fun insertPosts(posts: List<Hit>) = db.cacheDao.insertCachedPosts(posts)
 
+    private suspend fun deleteCachedPosts() = db.cacheDao.deleteCachedPosts()
+
      fun getCachedPosts(): Flow<Resource> {
         Log.d(TAG, "getCachedPosts: fired")
         return networkBoundResource(
             query = { db.cacheDao.getCachedPosts() },
             fetch = {
-                delay(2000)
+                delay(5000)
                 retrofitService.getPosts()
             },
             saveFetchResult = { posts ->
@@ -62,13 +68,13 @@ class CachedPostsRepo(private val db: CachedPostsDatabase, private val context: 
         )
     }
 
-    private suspend fun deleteCachedPosts() = db.cacheDao.deleteCachedPosts()
-
     private fun isNetworkConnected(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetworkInfo = connectivityManager.activeNetworkInfo
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+        val isConnected = activeNetworkInfo != null && activeNetworkInfo.isConnected
+        Log.d(TAG, "isNetworkConnected: $isConnected")
+        return isConnected
     }
 
     companion object {

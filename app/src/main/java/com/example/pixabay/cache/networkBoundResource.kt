@@ -17,26 +17,21 @@ fun networkBoundResource(
     query: () -> Flow<List<Hit>>,
     fetch: suspend () -> PostModel,
     saveFetchResult: suspend (List<Hit>) -> Unit,
-    shouldFetch: Boolean = true
-): Flow<Resource> {
-    Log.d(TAG, "networkBoundResource: fired")
-
-    return flow {
-        val data = query().first()
+    shouldFetch: Boolean
+): Flow<Resource> = flow {
+    val data = query().first()
+    val resource = if(shouldFetch){
         emit(Resource.LOADING(data))
-        val resource = try {
-            val fetchedData = fetch().hits
-            saveFetchResult(fetchedData)
-            query().map {
-                Resource.SUCCESS(data)
-            }
-        } catch (th: Throwable) {
-            query().map {
-                Resource.ERROR(data, th)
-            }
-        }
 
-        emitAll(resource)
-    }
+        try {
+            val resultType = fetch()
 
+            saveFetchResult(resultType.hits)
+
+            query().map { Resource.SUCCESS(it) }
+
+        }catch (throwable: Throwable){query().map{Resource.ERROR(it, throwable)}}
+    } else {query().map { Resource.SUCCESS(it) }}
+
+    emitAll(resource)
 }

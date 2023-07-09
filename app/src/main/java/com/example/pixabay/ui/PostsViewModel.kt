@@ -3,6 +3,7 @@ package com.example.pixabay.ui
 import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pixabay.cache.Resource
@@ -36,6 +37,8 @@ class PostsViewModel(private val application: Application) : ViewModel() {
         get() = _favouritePostsMutableFlow
     val resourceStateFlow: StateFlow<Resource>
         get() = _resourceMutableFlow
+    val postsMutableFlow: StateFlow<List<Hit>>
+        get() = _postsMutableFlow
     init {
         getPosts()
     }
@@ -50,10 +53,15 @@ class PostsViewModel(private val application: Application) : ViewModel() {
     }
 
     fun getPostsByTags(tag: String) {
+        Log.d(TAG, "start getting posts by tag: $tag")
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 postsRepo.getPostsByTags(tag).collect {
-                    _postsMutableFlow.value = it
+                    withContext(Dispatchers.Main){ _postsMutableFlow.value = it; Log.d(
+                        TAG,
+                        "getPostsByTags: ${it.size}"
+                    ) }
+                    
                 }
             }
         }
