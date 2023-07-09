@@ -32,7 +32,7 @@
 
 ![image](https://github.com/mhammadgammal/pixabay/assets/73348912/567e4df0-09a5-4ef7-9205-ce2cde407f73)
 
-# Vudeo
+# Video
 https://drive.google.com/file/d/15UHhl0kQBqoPCWyfssJOkd3w_COULYK7/view?usp=sharing
 
 # APK 
